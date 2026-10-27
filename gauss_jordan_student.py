@@ -12,31 +12,31 @@ Instrucciones para el Live Coding:
 import numpy as np
 
 # Configuración visual para la consola de Spyder (6 decimales limpios)
-np.set_printoptions(precision=6, suppress=True)
+np.set_printoptions(precision=6, suppress=True) #(ajusta a mostrar 6 decimales,suprime notacion en numeros muy pequeños a 0.0)
 
 
 # =============================================================================
 # BLOQUE 1: GAUSS-JORDAN CON PIVOTEO PARCIAL (ALGORITMO PRINCIPAL)
 # =============================================================================
-def gauss_jordan_con_pivoteo(A, b, verbose=False):
+def gauss_jordan_con_pivoteo(A, b, verbose=False): #definimos la funcion (matriz coeficientes,vector de terminos indepenedientes,nos ayuda a ver el paso a paso)
     """
     Resuelve el sistema Ax = b mediante Gauss-Jordan con Pivoteo Parcial.
     """
     # Conversión de A a float64 (doble precisión) y copia independiente en memoria
-    A = np.array(A, dtype=np.float64, copy=True)
+    A = np.array(A, dtype=np.float64, copy=True) #(Recibe A,asegura que sean valores float64, copia los datos de la matriz a )
     
     # Conversión de b a float64 y forzado a vector columna (n, 1)
-    b = np.array(b, dtype=np.float64, copy=True).reshape(-1, 1)
+    b = np.array(b, dtype=np.float64, copy=True).reshape(-1, 1) #(recibe b,valores,copia).lo forza a ser vector columna
     
     # Número de ecuaciones e incógnitas
-    n = len(b)
+    n = len(b) #(elementos de b)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # [TODO 1]: Construir la matriz aumentada [A | b]
     # Apila horizontalmente la matriz A (n x n) y el vector columna b (n x 1)
     # ~> Ab = np.hstack([A, b])
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Ab = np.hstack([A, b])  # ~> Reemplaza por: np.hstack([A, b])
+    Ab = np.hstack([A, b])  # ~> Reemplaza por: np.hstack([A, b]) #une las matrices
     
     if verbose:
         print("\n--- MATRIZ AUMENTADA INICIAL [A | b] ---")
@@ -47,14 +47,14 @@ def gauss_jordan_con_pivoteo(A, b, verbose=False):
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # [TODO 2]: Búsqueda del pivote parcial en la columna k
         # Escanear verticalmente desde la diagonal hacia abajo buscando el máximo absoluto
-        # Recuerda sumar '+ k' por el desfase del recorte local
+        # sumar '+ k' por el desfase del recorte local
         # ~> fila_max = k + np.argmax(np.abs(Ab[k:, k]))
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         fila_max = k + np.argmax(np.abs(Ab[k:, k]))  # ~> Reemplaza por: k + np.argmax(np.abs(Ab[k:, k]))
-        
+        #recorta la columna k desde la fila en la que este hacia abajo, y lo vuelve absoluto, y encuentra la posicion del numero mas grande y le suma k para obtener el indice real por que esta en cero
         # Validación de seguridad: si el pivote máximo es 0, la matriz es singular
-        pivote_val = Ab[fila_max, k]
-        if np.isclose(pivote_val, 0.0, atol=1e-14):
+        pivote_val = Ab[fila_max, k] #extrae el y guarda el valor numerico
+        if np.isclose(pivote_val, 0.0, atol=1e-14): #revisa la tolerancia 
             raise ValueError(f"Sistema singular: pivote nulo en columna {k}.")
             
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +65,7 @@ def gauss_jordan_con_pivoteo(A, b, verbose=False):
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # <-- ESCRIBE AQUÍ EL SWAP:
         if fila_max != k:
-            Ab[[k, fila_max]] = Ab[[fila_max, k]]
+            Ab[[k, fila_max]] = Ab[[fila_max, k]] #intercambia la fila k con la fila (fancy indexing)
         
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # [TODO 4]: Normalizar la fila pivote para tener 1.0 en la diagonal
@@ -73,7 +73,7 @@ def gauss_jordan_con_pivoteo(A, b, verbose=False):
         # ~> Ab[k] = Ab[k] / Ab[k, k]
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # <-- ESCRIBE AQUÍ LA NORMALIZACIÓN:
-        Ab[k] = Ab[k] / Ab[k, k]
+        Ab[k] = Ab[k] / Ab[k, k] #dividimos toda la fila pivote entre su propio elemento para que quede uno
         
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # [TODO 5]: Eliminación bidireccional (hacer 0 arriba y abajo de la diagonal)
@@ -83,11 +83,11 @@ def gauss_jordan_con_pivoteo(A, b, verbose=False):
         # ~>         factor = Ab[i, k]
         # ~>         Ab[i] = Ab[i] - factor * Ab[k]
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # <-- ESCRIBE AQUÍ EL BUCLE DE ELIMINACIÓN:
-        for i in range(n):
+        # <--BUCLE DE ELIMINACIÓN:
+        for i in range(n): # [indice de fila desde la primera hasta la ultima]
             if i != k:
-                factor = Ab[i, k]
-                Ab[i] = Ab[i] - factor * Ab[k]
+                factor = Ab[i, k] #almacena ese valor
+                Ab[i] = Ab[i] - factor * Ab[k] #limpia esa fila con la mult del factor 
         
         if verbose:
             print(f"\n--- Columna {k} reducida ---")
@@ -111,17 +111,17 @@ def calcular_residuo(A, b, x_calculado):
     Calcula el vector residuo r = b - A x_hat y su norma euclidiana ||r||_2.
     """
     A = np.array(A, dtype=np.float64)
-    b = np.array(b, dtype=np.float64).flatten()
+    b = np.array(b, dtype=np.float64).flatten() #flatten los convierte en arreglos unidimensionales para operar r=b-Ax^
     x = np.array(x_calculado, dtype=np.float64).flatten()
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # [TODO 7]: Calcular el residuo algebraico r = b - A @ x y su norma L2
     # Multiplica la matriz A por la solución x con el operador '@'
-    # ~> r = b - A @ x
+    # ~> r = b - A @ x #mult matricial
     # ~> norma = np.linalg.norm(r, 2)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     r = b - A @ x     # ~> Reemplaza por: b - A @ x
-    norma = np.linalg.norm(r,2)  # ~> Reemplaza por: np.linalg.norm(r, 2)
+    norma = np.linalg.norm(r,2)  # ~> Reemplaza por: np.linalg.norm(r, 2) #calucula la norma euclidiana del vector residuo r resume la discrepancia que hubo en un numero escalar e indica los errores de aproximacion 
     
     return r, norma
 
