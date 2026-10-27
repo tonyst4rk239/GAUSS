@@ -1,14 +1,7 @@
-# Archivos de solución maestra y administración interna (no visibles para la clase)
-gauss_jordan_master.py
-visualizador_paso_a_paso.py
-generar_*.py
-Manual_*.pdf
-Presentacion_*.pptx
+# Archivos binarios pesados no necesarios en git
+*.pdf
+*.pptx
 *.docx
-*.txt
-*.md
-!README.md
-*.png
 imagenes_canva/
 latex_formulas/
 

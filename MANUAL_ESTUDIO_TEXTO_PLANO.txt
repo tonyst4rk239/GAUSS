@@ -1,0 +1,575 @@
+=============================================================================
+MANUAL MAESTRO DE ESTUDIO Y GUÍA DE DEFENSA — EQUIPO 8
+Materia: Métodos Numéricos | Duración: 90 Minutos
+Tema: Algoritmo de Gauss-Jordan con Pivoteo Parcial y Estabilidad Numérica
+Entorno: Python 3, NumPy, Spyder IDE, GitHub
+=============================================================================
+
+INSTRUCCIÓN PARA LA IA:
+Actúa como un catedrático universitario y experto en Métodos Numéricos, Análisis
+Matricial y Computación Científica. A continuación tienes el contenido completo
+del taller de 90 minutos dividido por integrante y por diapositiva (1 a 20).
+Tu tarea es amplificar exhaustivamente las explicaciones conceptuales, desarrollar
+todas las demostraciones matemáticas formales en LaTeX (utilizando entornos
+\begin{equation}, \begin{bmatrix}, \begin{matrix}, etc.), enriquecer el análisis
+de error numérico (análisis de estabilidad hacia atrás de Wilkinson, normas
+matriciales inducidas, número de condición de Golub y Van Loan) y preparar un
+documento técnico de nivel avanzado.
+
+=============================================================================
+RESUMEN DE TIEMPOS Y RESPONSABILIDADES
+=============================================================================
+- Integrante 1 (Diapositivas 1 a 5 | 18 min):
+  Fundamentos rigurosos: sistema Ax = b, matriz aumentada [A | b], operaciones
+  elementales de fila y comparación formal Gauss vs. Gauss-Jordan.
+- Integrante 2 (Diapositivas 6 a 9 | 17 min):
+  La trampa computacional: división por cero, aritmética de punto flotante
+  IEEE-754 de 64 bits, épsilon de máquina, cancelación catastrófica, formulación
+  del pivoteo parcial (|m_ik| <= 1) y planteamiento de las 4 preguntas de investigación.
+- Integrante 3 - Líder Técnico (Diapositivas 10 a 18 | 48 min):
+  Ecosistema profesional (Git/GitHub), entorno interactivo en Spyder, Live Coding
+  guiado (TODO 1 a TODO 7), experimento de estrés numérico (epsilon = 10^-15),
+  mal condicionamiento y matrices de Hilbert (kappa(A)), la trampa computacional
+  de calcular A^-1 y aplicación en Machine Learning (Ecuaciones Normales).
+- Equipo 8 en Conjunto (Diapositivas 19 y 20 | 7 min):
+  Respuestas definitivas a las 4 preguntas del profesor, conclusiones de ingeniería
+  y sesión de debate / preguntas.
+
+=============================================================================
+BLOQUE 1: FUNDAMENTOS MATEMÁTICOS (INTEGRANTE 1)
+=============================================================================
+
+--- DIAPOSITIVA 1: PORTADA Y PRESENTACIÓN DEL TALLER ---
+Responsable: Integrante 1
+Tiempo sugerido: 3 minutos
+Título: Algoritmo de Gauss-Jordan con Pivoteo Parcial y Estabilidad Numérica: Del Pizarrón a la Computación Científica
+Subtítulo: Equipo 8 — Métodos Numéricos
+
+Objetivo Pedagógico:
+Establecer un tono profesional de alto impacto. No presentarse como una exposición
+teórica pasiva, sino como un taller técnico interactivo donde los compañeros
+pueden clonar el repositorio en GitHub y seguir la programación en vivo en Spyder.
+
+Conceptos Teóricos a Desarrollar:
+- Métodos directos vs. Métodos iterativos en álgebra lineal numérica:
+  Gauss-Jordan es un método directo que calcula la solución teórica exacta en un
+  número finito y determinista de operaciones aritméticas (flops). A diferencia de
+  los métodos iterativos (Jacobi, Gauss-Seidel, Gradiente Conjugado) que generan
+  sucesiones de vectores aproximados que convergen asintóticamente.
+- Ecosistema de herramientas:
+  Python 3 como lenguaje de cómputo científico, NumPy como motor de arreglos
+  multidimensionales vectorizados con enlaces a bibliotecas BLAS/LAPACK escritas
+  en C y Fortran, y Spyder como Entorno de Desarrollo Integrado (IDE) estándar
+  en ingeniería para inspección de variables matriciales y depuración.
+
+Guion Oral del Expositor:
+"Buen día profesor y compañeros. Hoy el Equipo 8 no viene únicamente a mostrar
+fórmulas estáticas en diapositivas. Venimos a impartir un taller técnico donde
+contrastaremos las matemáticas puras de pizarrón con la física real de las
+computadoras y la precisión finita. Les pedimos a quienes cuenten con laptop
+escanear el código QR que ven en pantalla: podrán clonar el repositorio de GitHub
+con la plantilla interactiva para programar y verificar cada línea de código en
+Spyder o Google Colab junto a nosotros. Damos inicio formal con las bases algebraicas
+de los sistemas lineales."
+
+
+--- DIAPOSITIVA 2: FORMULACIÓN MATRICIAL DEL SISTEMA LINEAL Ax = b ---
+Responsable: Integrante 1
+Tiempo sugerido: 4 minutos
+Título: Formulación Matricial del Sistema Lineal Ax = b
+Subtítulo: Representación compacta y significado geométrico
+
+Formulación Matemática en LaTeX:
+\begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & \cdots & a_{nn}
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\ x_2 \\ \vdots \\ x_n
+\end{bmatrix}
+=
+\begin{bmatrix}
+b_1 \\ b_2 \\ \vdots \\ b_n
+\end{bmatrix}
+\iff Ax = b
+
+Dimensiones y Espacios Vectoriales:
+A \in \mathbb{R}^{n \times n}, \quad x \in \mathbb{R}^{n \times 1}, \quad b \in \mathbb{R}^{n \times 1}
+
+Objetivo Pedagógico:
+Hacer la transición desde el álgebra escolar de múltiples ecuaciones escalares
+hacia la concepción de A como un operador lineal continuo que mapea un vector
+de incógnitas x sobre un vector de respuestas o excitaciones b.
+
+Preguntas Trampa del Profesor y Respuestas:
+- Pregunta: ¿Bajo qué condiciones teóricas existe una solución única para Ax = b?
+- Respuesta Rigurosa: El Teorema Fundamental del Álgebra Lineal establece que el
+  sistema tiene solución única si y solo si la matriz A es no singular. Esto equivale
+  a decir que det(A) != 0, que el rango de A es exactamente n (todas las filas y
+  columnas son linealmente independientes), que el espacio nulo de A contiene
+  únicamente al vector cero (Ker(A) = {0}), o que 0 no es un valor propio de A.
+
+
+--- DIAPOSITIVA 3: LA MATRIZ AUMENTADA [A | b] ---
+Responsable: Integrante 1
+Tiempo sugerido: 3 minutos
+Título: La Matriz Aumentada [A | b]
+Subtítulo: Empaquetamiento para preservación de invariantes
+
+Formulación Matemática en LaTeX:
+[A \mid b] = \left[\begin{array}{cccc|c}
+a_{11} & a_{12} & \cdots & a_{1n} & b_1 \\
+a_{21} & a_{22} & \cdots & a_{2n} & b_2 \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+a_{n1} & a_{n2} & \cdots & a_{nn} & b_n
+\end{array}\right] \in \mathbb{R}^{n \times (n+1)}
+
+Conceptos Teóricos:
+- Principio de Invarianza: Cada fila de la matriz aumentada representa una relación
+  de igualdad física completa. Cualquier combinación lineal aplicada sobre una fila
+  afecta de forma simultánea e idéntica tanto a los coeficientes de las variables
+  como al término independiente, preservando inalterado el hiperplano solución.
+- Implementación en NumPy:
+  En Python, un vector unidimensional b tiene forma (n,). Para unirlo a una matriz
+  bidimensional (n, n), se debe forzar una dimensión de columna (n, 1) mediante
+  b.reshape(-1, 1). La concatenación se ejecuta con np.hstack([A, b.reshape(-1, 1)]).
+
+
+--- DIAPOSITIVA 4: OPERACIONES ELEMENTALES POR FILA ---
+Responsable: Integrante 1
+Tiempo sugerido: 4 minutos
+Título: Operaciones Elementales por Fila
+Subtítulo: Los 3 axiomas de transformación matricial y su sintaxis en NumPy
+
+Las 3 Operaciones Elementales y su Equivalencia en Código:
+1. Intercambio de dos filas:
+   LaTeX: R_i \longleftrightarrow R_j
+   NumPy: Ab[[i, j]] = Ab[[j, i]]
+2. Escalamiento por un escalar no nulo:
+   LaTeX: R_i \longleftarrow c \cdot R_i \quad (c \neq 0)
+   NumPy: Ab[i] = Ab[i] / pivote
+3. Combinación lineal (anulación de coeficientes):
+   LaTeX: R_i \longleftarrow R_i - factor \cdot R_j
+   NumPy: Ab[i] = Ab[i] - factor * Ab[k]
+
+Demostración Algebraica:
+Cada operación elemental de fila equivale a premultiplicar la matriz aumentada
+por una matriz elemental no singular E_k. Debido a que det(E_k) != 0, la matriz
+elemental es invertible. Por lo tanto:
+E_k · [A | b] = [E_k A | E_k b]
+El espacio nulo y el conjunto solución permanecen exactamente invariantes:
+{x : Ax = b} = {x : (E_k A)x = E_k b}.
+
+
+--- DIAPOSITIVA 5: GAUSS TRADICIONAL VS. GAUSS-JORDAN ---
+Responsable: Integrante 1
+Tiempo sugerido: 4 minutos
+Título: Gauss Tradicional vs. Gauss-Jordan
+Subtítulo: ¿Triangularización o Reducción Total a la Identidad?
+
+Comparación Teórica y Complejidad:
+1. Eliminación Gaussiana Clásica:
+   LaTeX: [A \mid b] \xrightarrow{\text{Gauss}} [U \mid c]
+   Lleva la matriz a forma escalonada triangular superior U. Deja ceros únicamente
+   por debajo de la diagonal principal.
+   Desventaja: Requiere una fase algorítmica posterior obligatoria: la sustitución
+   regresiva hacia atrás (Back-substitution).
+   Complejidad computacional: ~ (1/3) n^3 sumas y productos en la eliminación
+   más ~ (1/2) n^2 en la sustitución regresiva.
+2. Método de Gauss-Jordan:
+   LaTeX: [A \mid b] \xrightarrow{\text{Gauss-Jordan}} [I \mid x]
+   Continúa eliminando ceros de forma bidireccional: anula coeficientes tanto
+   por debajo como por encima de cada elemento pivote y normaliza la fila para
+   generar directamente la matriz identidad I.
+   Ventaja: No requiere sustitución hacia atrás; la solución x se lee directamente
+   en la última columna.
+   Complejidad computacional: ~ (1/2) n^3 a (2/3) n^3 operaciones de punto flotante.
+
+Frase de Cierre y Transición:
+"Sobre el papel, este procedimiento algebraico parece infalible. Sin embargo, en
+una computadora real con registros de memoria finita, un algoritmo 'ciego' de
+Gauss-Jordan puede colapsar catastróficamente. Cedo la palabra a mi compañero
+para analizar la trampa computacional."
+
+=============================================================================
+BLOQUE 2: LA TRAMPA COMPUTACIONAL Y PIVOTEO (INTEGRANTE 2)
+=============================================================================
+
+--- DIAPOSITIVA 6: LA TRAMPA COMPUTACIONAL: PIVOTE CERO ---
+Responsable: Integrante 2
+Tiempo sugerido: 4 minutos
+Título: La Trampa Computacional: División por Cero
+Subtítulo: Cuando las matemáticas abstractas colapsan en el procesador
+
+El Caso Patológico Simple:
+A = \begin{bmatrix} 0 & 2 \\ 3 & 4 \end{bmatrix}, \quad b = \begin{bmatrix} 4 \\ 5 \end{bmatrix}
+
+Análisis Teórico:
+- Regularidad: det(A) = (0)(4) - (2)(3) = -6 != 0. La matriz es perfectamente no singular
+  y posee solución única.
+- Comportamiento algorítmico: En la primera iteración k = 0, el pivote diagonal
+  es a_00 = 0.
+- El algoritmo intenta calcular el factor de escalamiento: 1 / a_00 = 1 / 0.
+- La Unidad Aritmético Lógica (ALU) interrumpe la ejecución arrojando una excepción
+  ZeroDivisionError en Python.
+- Conclusión pedagógica: El fallo no es del sistema matemático, sino de la rigidez
+  de un algoritmo secuencial que no examina la geometría de sus datos antes de operar.
+
+
+--- DIAPOSITIVA 7: ARITMÉTICA IEEE-754 Y ERROR DE REDONDEO ---
+Responsable: Integrante 2
+Tiempo sugerido: 5 minutos
+Título: Aritmética Flotante IEEE-754 y Cancelación Catastrófica
+Subtítulo: El peligro cuando el pivote no es cero, sino diminuto
+
+Arquitectura de la Aritmética Computacional:
+- Estándar IEEE-754 Doble Precisión (64 bits):
+  * 1 bit de signo (s)
+  * 11 bits de exponente sesgado (e)
+  * 52 bits de mantisa o fracción explícita (f), otorgando ~15 a 17 dígitos decimales.
+- Representación numérica:
+  x = (-1)^s \times 2^{e - 1023} \times (1.f_1 f_2 \cdots f_{52})_2
+- Épsilon de máquina (Machine Epsilon):
+  \epsilon_{\text{mach}} = 2^{-52} \approx 2.2204 \times 10^{-16}
+  Es la distancia relativa entre 1.0 y el siguiente número representable en punto flotante.
+
+El Mecanismo de la Cancelación Catastrófica:
+Supongamos que en la diagonal queda un número sumamente pequeño: a_kk = 10^-15.
+El factor multiplicador de Gauss-Jordan se dispara:
+m_ik = a_ik / a_kk = a_ik / 10^-15 = a_ik \times 10^15.
+Al actualizar la fila i:
+Ab[i] = Ab[i] - 10^15 * Ab[k].
+Se restan números de magnitud 10^15 contra números de magnitud unitaria (~1).
+En el registro de 52 bits de la mantisa, los dígitos de menor peso representativo
+de Ab[i] se pierden irrecuperablemente por desplazamiento a la derecha. Este fenómeno
+se denomina Cancelación Catastrófica y contamina los cálculos con errores grotescos.
+
+
+--- DIAPOSITIVA 8: LA SOLUCIÓN: PIVOTEO PARCIAL ---
+Responsable: Integrante 2
+Tiempo sugerido: 4 minutos
+Título: La Solución Formal: Pivoteo Parcial por Columnas
+Subtítulo: Acotamiento estricto de multiplicadores (|m_ik| <= 1)
+
+Algoritmo del Pivoteo Parcial en la Etapa k:
+1. Inspección vertical: Buscar en la columna k, desde la fila k hasta la última n-1,
+   el elemento con mayor valor absoluto:
+   p = \arg\max_{i \ge k} |a_{ik}|
+2. Intercambio condicional (Swap):
+   Si p != k, se intercambia la fila k con la fila p:
+   R_k \longleftrightarrow R_p
+
+Teorema de Acotamiento y Estabilidad Numérica:
+Al seleccionar como denominador el elemento de máxima magnitud de toda la columna:
+|m_{ik}| = \left| \frac{a_{ik}}{a_{kk}} \right| \le 1 \quad \forall i \ge k.
+Dado que todos los factores multiplicadores satisfacen |m_ik| <= 1, los errores
+de redondeo previos generados por la precisión finita jamás se multiplican por
+factores mayores a la unidad. Esto garantiza estabilidad hacia atrás en el sentido
+de Wilkinson.
+
+
+--- DIAPOSITIVA 9: LAS 4 PREGUNTAS CLAVE DEL PROFESOR ---
+Responsable: Integrante 2
+Tiempo sugerido: 4 minutos
+Título: Las 4 Preguntas Clave de Investigación
+Subtítulo: Hoja de ruta experimental que responderemos en vivo en Spyder
+
+Las 4 Preguntas:
+1. ¿Por qué se necesita buscar un nuevo pivote en cada columna?
+2. ¿Qué mide realmente el vector residuo r = b - A x_hat?
+3. ¿Puede coexistir un residuo pequeño con un error grande?
+4. ¿Por qué no conviene resolver Ax = b calculando la inversa A^-1?
+
+Frase de Cierre de Integrante 2:
+"No responderemos estas cuatro preguntas con simple teoría abstracta. A continuación,
+nuestro líder técnico demostrará cada una de ellas mediante código en vivo en Spyder,
+experimentos con perturbaciones extremas de 10^-15, matrices de Hilbert y análisis
+en Machine Learning."
+
+=============================================================================
+BLOQUE 3: LIVE CODING, ESTRÉS Y MACHINE LEARNING (INTEGRANTE 3)
+=============================================================================
+
+--- DIAPOSITIVA 10: ECOSISTEMA PROFESIONAL: GIT & GITHUB ---
+Responsable: Integrante 3 (Tú)
+Tiempo sugerido: 4 minutos
+Título: Ecosistema Profesional: Git, GitHub y Trazabilidad
+Subtítulo: Buenas prácticas de ingeniería de software para computación científica
+
+Conceptos de Ingeniería de Software:
+- En la práctica profesional y en la investigación científica contemporánea, los
+  algoritmos no se transmiten por mensajería informal ni mediante archivos
+  desarticulados. Se gestionan bajo sistemas de control de versiones distribuidos (Git).
+- Repositorio del Equipo 8:
+  * README.md con especificación técnica, insignias (badges) y tablas comparativas.
+  * gauss_jordan_student.py: Esqueleto pedagógico con bloques TODO para trabajo en vivo.
+  * gauss_jordan_master.py: Suite de producción con pruebas unitarias, cálculo de
+    residuos, benchmarks temporales y matrices de Hilbert.
+- Trazabilidad y Reproducibilidad: Cada confirmación (commit) constituye un estado
+  matemáticamente reproducible del software, permitiendo auditar la evolución del algoritmo.
+
+
+--- DIAPOSITIVA 11: PREPARACIÓN DEL ENTORNO EN SPYDER ---
+Responsable: Integrante 3 (Tú)
+Tiempo sugerido: 4 minutos
+Título: Preparación del Entorno Spyder / IPython
+Subtítulo: El taller interactivo para programar en tiempo real
+
+Las 3 Zonas del IDE Spyder proyectadas en pantalla:
+1. Panel Editor (Izquierda): Donde abrimos el script interactivo gauss_jordan_student.py.
+2. Explorador de Variables (Superior derecha): Permite inspeccionar en tiempo real
+   la estructura interna de la matriz aumentada Ab, verificando el tipo de dato
+   (float64), sus dimensiones y los cambios celda por celda.
+3. Consola IPython (Inferior derecha): Entorno interactivo donde ejecutamos las
+   celdas de código (%run) y comprobamos salidas con F5.
+
+
+--- DIAPOSITIVAS 12, 13 Y 14: LIVE CODING DE TODO 1 A TODO 7 ---
+Responsable: Integrante 3 (Tú)
+Tiempo sugerido: 20 minutos
+Título: Programación en Vivo del Algoritmo Robusto en Spyder
+Subtítulo: Completando los 7 bloques de la plantilla student
+
+Lógica y Sintaxis de cada bloque a codificar en vivo frente al grupo:
+
+TODO 1: Matriz Aumentada
+Código:
+Ab = np.hstack([A, b.reshape(-1, 1)])
+Explicación: Concatena horizontalmente la matriz de coeficientes A (n, n) con el
+vector de términos independientes convertido explícitamente en vector columna (n, 1).
+
+TODO 2: Búsqueda del Pivote Parcial en la Columna k
+Código:
+fila_max = k + np.argmax(np.abs(Ab[k:, k]))
+Detalle crítico de ingeniería: np.abs(Ab[k:, k]) extrae un recorte de la columna k
+desde la diagonal hacia abajo. np.argmax devuelve la posición relativa (empezando en 0)
+dentro de ese recorte. Sumar + k es INDISPENSABLE para convertir ese índice relativo
+en el índice absoluto de la fila en la matriz original Ab.
+
+TODO 3: Intercambio Atómico de Filas (Swap)
+Código:
+if fila_max != k:
+    Ab[[k, fila_max]] = Ab[[fila_max, k]]
+Explicación: Hace uso del Fancy Indexing de NumPy para intercambiar ambas filas en
+memoria en una sola operación atómica a nivel de lenguaje C, sin requerir variables
+auxiliares temporales.
+
+TODO 4: Normalización Unitaria de la Fila Pivote
+Código:
+Ab[k] = Ab[k] / Ab[k, k]
+Explicación: Divide toda la fila k entre el elemento diagonal Ab[k, k] para fijar
+el nuevo pivote en 1.0 exacto.
+
+TODO 5: Eliminación Bidireccional (Arriba y Abajo de la Diagonal)
+Código:
+for i in range(n):
+    if i != k:
+        factor = Ab[i, k]
+        Ab[i] = Ab[i] - factor * Ab[k]
+Explicación: A diferencia de Gauss tradicional (que solo recorre desde k+1 hasta n),
+Gauss-Jordan itera sobre todas las filas i != k. Multiplica la fila pivote normalizada
+por el factor Ab[i, k] y la resta de la fila i, anulando simultáneamente los
+elementos superiores e inferiores en una sola pasada.
+
+TODO 6: Extracción de la Solución
+Código:
+x = Ab[:, -1]
+Explicación: Como el bloque izquierdo de Ab se transformó en la matriz identidad I,
+la solución del sistema se lee de forma inmediata en la última columna.
+
+TODO 7: Cálculo y Validación del Vector Residuo
+Código:
+r = b - A @ x
+norma_r = np.linalg.norm(r, 2)
+Explicación: Se multiplica la matriz original A por la solución calculada x y se
+compara contra el vector de entrada b. Se calcula la norma euclidiana ||r||_2.
+
+Casos de Validación Inmediata en Spyder:
+- Caso 1 (Regular 3x3): Verificación contra np.linalg.solve(A, b).
+- Caso 2 (Pivote Cero): Sistema con A[0,0] = 0. Se ejecuta con verbose=True para
+  que toda la clase vea cómo la consola imprime el mensaje de intercambio de filas
+  y resuelve el sistema sin lanzar excepciones.
+
+
+--- DIAPOSITIVA 15: EXPERIMENTO DE ESTRÉS (epsilon = 10^-15) ---
+Responsable: Integrante 3 (Tú)
+Tiempo sugerido: 8 minutos
+Título: Experimento Obligatorio: Inestabilidad Numérica
+Subtítulo: Colapso sin pivote vs. Estabilidad con pivote y LAPACK
+
+El Sistema Experimental:
+\begin{bmatrix}
+10^{-15} & 1 \\
+1 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\ x_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 + 10^{-15} \\
+2
+\end{bmatrix}
+Solución analítica exacta: x_1 = 1.0, x_2 = 1.0.
+
+Resultados en la Consola de Spyder:
+1. Gauss-Jordan SIN Pivoteo:
+   La división entre 10^-15 provoca una resta de magnitudes dispares en IEEE-754.
+   El algoritmo colapsa por cancelación catastrófica o produce soluciones no válidas.
+2. Gauss-Jordan CON Pivoteo Parcial:
+   El algoritmo detecta que en la segunda fila el coeficiente es 1.0 (mayor a 10^-15),
+   intercambia las filas antes de normalizar y calcula:
+   x_hat = [1.000000, 1.000000]^T
+   Norma del residuo: ||r||_2 = 2.2204 \times 10^-16 (Épsilon de máquina).
+   Error relativo hacia adelante: ||x - x_hat|| / ||x|| = 2.2204 \times 10^-16.
+3. numpy.linalg.solve (Referencia Profesional):
+   Produce idéntico resultado con error 2.2204 \times 10^-16 porque por debajo
+   ejecuta la rutina DGETRF de LAPACK (descomposición LU con pivoteo parcial).
+
+
+--- DIAPOSITIVA 16: MAL CONDICIONAMIENTO Y MATRICES DE HILBERT ---
+Responsable: Integrante 3 (Tú)
+Tiempo sugerido: 8 minutos
+Título: Mal Condicionamiento y Matrices de Hilbert
+Subtítulo: ¿Residuo pequeño garantiza solución exacta? ¡La trampa de kappa(A)!
+
+Definición de la Matriz de Hilbert:
+H_{ij} = \frac{1}{i + j + 1}, \quad i, j = 0, 1, \dots, n-1
+Es el ejemplo canónico en análisis numérico de una matriz simétrica, definida
+positiva pero extremadamente mal condicionada.
+
+El Teorema Fundamental del Error Hacia Adelante (Golub y Van Loan):
+\frac{\|x - \hat{x}\|}{\|x\|} \le \kappa(A) \cdot \frac{\|r\|}{\|b\|}
+donde \kappa(A) = \|A\| \cdot \|A^{-1}\| es el Número de Condición.
+
+Experimento en Spyder con H_10 (Hilbert 10x10):
+- Número de Condición: \kappa(H_{10}) \approx 1.60 \times 10^{13}.
+- Residuo calculado: ||r||_2 \approx 4.73 \times 10^{-15} (¡Aparentemente perfecto!).
+- Error real hacia adelante: ||x - x_hat|| / ||x|| \approx 1.15 \times 10^{-5}.
+Conclusión demoledora: Se perdieron más de 10 dígitos decimales de precisión.
+Aunque el algoritmo fue numéricamente estable hacia atrás (residuo del orden de 10^-15),
+el número de condición de la matriz actuó como un amplificador del error.
+Analogía Pedagógica: "El residuo mide si la llave entra en la cerradura; el error
+mide si abrió la puerta correcta."
+
+
+--- DIAPOSITIVA 17: LA TRAMPA DE LA INVERSA A^-1 ---
+Responsable: Integrante 3 (Tú)
+Tiempo sugerido: 6 minutos
+Título: La Trampa de la Inversa A^-1 y Complejidad Asintótica
+Subtítulo: Por qué los ingenieros jamás resuelven Ax = b calculando inv(A) @ b
+
+Benchmark en Spyder para una Matriz Densa n = 800:
+1. Resolver directo (np.linalg.solve):
+   Tiempo de CPU: 0.0134 segundos | Flops teóricos: ~ (1/3) n^3 a (2/3) n^3.
+2. Invertir y multiplicar (np.linalg.inv(A) @ b):
+   Tiempo de CPU: 0.0351 segundos | Flops teóricos: ~ 2n^3 + 2n^2.
+   ¡Invertir fue 2.61 veces más lento!
+
+Las 3 Razones Fundamentales de Ingeniería:
+1. Complejidad Algorítmica: Invertir A exige resolver el sistema para los n vectores
+   de la base canónica (columnas de la identidad) más un producto matriz-vector
+   posterior, triplicando el número de operaciones de punto flotante.
+2. Acumulación de Error: El cálculo numérico de la inversa aproxima A^-1 con
+   errores de redondeo; la multiplicación posterior por b acumula un segundo ciclo
+   de errores de mantisa.
+3. Pérdida de Dispersión (Sparsity / Fill-in): En problemas reales de ingeniería
+   (redes eléctricas, elementos finitos, mallas fluidodinámicas), A suele ser una
+   matriz con un 95% o 99% de ceros. Resolver directamente aprovecha la estructura
+   hueca. La inversa de una matriz dispersa es prácticamente siempre 100% densa,
+   lo que desbordaría la memoria RAM de cualquier computadora.
+
+
+--- DIAPOSITIVA 18: APLICACIÓN REAL EN MACHINE LEARNING ---
+Responsable: Integrante 3 (Tú)
+Tiempo sugerido: 6 minutos
+Título: Aplicación Moderna: Regresión en Machine Learning
+Subtítulo: Ecuaciones Normales resueltas con nuestro propio Gauss-Jordan
+
+Formulación Matemática del Aprendizaje Supervisado:
+Dado un conjunto de datos experimentales ruidosos {(x_i, y_i)}_{i=1}^m, se desea
+ajustar una función cuadrática y = \beta_0 + \beta_1 x + \beta_2 x^2.
+El criterio de Mínimos Cuadrados Ordinarios (OLS) busca minimizar la norma del
+error residual:
+\min_{\beta} \|y - X\beta\|_2^2
+Derivando el funcional respecto al vector de parámetros \beta e igualando a cero:
+\nabla_\beta \|y - X\beta\|_2^2 = -2 X^T (y - X\beta) = 0
+\implies (X^T X)\beta = X^T y
+
+Equivalencia con un Sistema Lineal:
+A_{\text{ML}} \cdot \beta = b_{\text{ML}}
+donde A_ML = X^T X es una matriz simétrica de 3x3 y b_ML = X^T y es un vector 3x1.
+Demostración en Spyder:
+El script formula A_ML y b_ML y resuelve los pesos óptimos utilizando nuestra función
+gauss_jordan_con_pivoteo:
+\beta_0 = 3.160497, \quad \beta_1 = -2.045710, \quad \beta_2 = 1.577399
+Diferencia contra Scipy: 4.44 \times 10^-15 (precisión de máquina).
+La gráfica ml_regression_gauss_jordan.png generada en vivo muestra el ajuste
+parabólico exacto sobre las muestras de entrenamiento.
+
+=============================================================================
+BLOQUE 4: RESPUESTAS DEFINITIVAS Y CIERRE (EQUIPO 8)
+=============================================================================
+
+--- DIAPOSITIVA 19: RESPUESTAS DEFINITIVAS A LAS 4 PREGUNTAS ---
+Responsable: Equipo 8 (Intervención coordinada)
+Tiempo sugerido: 4 minutos
+Título: Respuestas Definitivas a las 4 Preguntas Clave del Profesor
+
+Pregunta 1: ¿Por qué se necesita buscar un nuevo pivote en cada columna?
+Respuesta:
+1. Existencia matemática: Evitar la división indeterminada por cero si el coeficiente
+   diagonal a_kk es nulo en la etapa k.
+2. Estabilidad numérica: Al seleccionar el elemento de máxima magnitud absoluta de
+   la subcolumna (|a_ik|), todos los factores de eliminación satisfacen |m_ik| <= 1.
+   Esto impide el crecimiento descontrolado de números en la mantisa y frena la
+   propagación del error de redondeo de punto flotante.
+
+Pregunta 2: ¿Qué mide el residuo?
+Respuesta:
+El residuo r = b - A x_hat mide el grado de fidelidad algebraica con el que la
+solución calculada x_hat satisface las ecuaciones originales en el espacio de
+llegada b.
+En análisis numérico certifica la estabilidad hacia atrás (backward stability):
+indica que la computadora resolvió de forma exacta un problema físicamente muy
+cercano al original.
+
+Pregunta 3: ¿Puede haber residuo pequeño y error grande?
+Respuesta:
+¡SÍ! Ocurre invariablemente cuando la matriz está mal condicionada (\kappa(A) \gg 1).
+La cota fundamental ||x - x_hat|| / ||x|| <= \kappa(A) * (||r|| / ||b||) demuestra
+que el número de condición actúa como un factor de amplificación. En una matriz de
+Hilbert 10x10, con \kappa(H_10) \approx 1.6 \times 10^13, un residuo infinitesimal
+de 10^-15 genera un error hacia adelante de 10^-5, perdiendo 10 dígitos significativos.
+
+Pregunta 4: ¿Por qué no conviene resolver Ax = b calculando primero A^-1?
+Respuesta:
+Por tres razones fundamentales de computación científica:
+1. Flops: Invertir requiere ~ 2n^3 operaciones frente a ~ (2/3) n^3 de resolver
+   directo (es 3 veces más lento).
+2. Estabilidad: Multiplicar por una inversa calculada numéricamente acumula el doble
+   de errores de redondeo en la mantisa.
+3. Dispersión: Invertir una matriz con 95% o 99% de ceros produce una matriz 100%
+   densa que satura y desborda la memoria RAM.
+
+
+--- DIAPOSITIVA 20: CONCLUSIONES Y CIERRE ---
+Responsable: Equipo 8
+Tiempo sugerido: 3 minutos
+Título: Conclusiones, Repositorio y Sesión de Preguntas
+
+Conclusiones de Ingeniería:
+- La elegancia teórica de un método en papel no garantiza su viabilidad en una computadora.
+- El pivoteo parcial constituye la frontera técnica entre un algoritmo escolar
+  inestable y una herramienta computacional de grado industrial.
+- El empleo de buenas prácticas (Git, GitHub, pruebas unitarias, análisis de residuo
+  y benchmarks de tiempo) eleva el estándar del estudiante de ingeniería.
+- El código fuente completo, datos experimentales y scripts de visualización quedan
+  a disposición de toda la clase en nuestro repositorio de GitHub.
+- Cierre: "Muchas gracias por su atención. Abrimos la sesión para cualquier pregunta
+  del profesor o de nuestros compañeros."
+=============================================================================
+FIN DEL DOCUMENTO MAESTRO
+=============================================================================
