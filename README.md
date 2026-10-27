@@ -2,7 +2,7 @@
 > **Métodos Numéricos — Equipo 8**  
 > Plantilla de trabajo interactiva para la clase en vivo. Conversión de operaciones elementales por fila en un algoritmo computacional robusto para resolver sistemas lineales $Ax = b$.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tonyst4rk239/GAUSS/blob/main/gauss_jordan_student.py)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tonyst4rk239/GAUSS/blob/main/gauss_jordan_student.ipynb)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![NumPy](https://img.shields.io/badge/NumPy-Required-orange.svg)](https://numpy.org/)
 [![IDE](https://img.shields.io/badge/IDE-Spyder%20%7C%20Colab-green.svg)](https://www.spyder-ide.org/)
@@ -13,20 +13,20 @@
 
 Tienes dos formas sencillas de trabajar con nosotros en tiempo real:
 
-### Opción A: En tu computadora con Spyder (Recomendado)
+### Opción A: En la nube con Google Colab (Recomendado para celulares y laptops)
+Haz clic en el siguiente botón para abrir el cuaderno interactivo directamente en tu navegador sin instalar nada:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tonyst4rk239/GAUSS/blob/main/gauss_jordan_student.ipynb)
+
+### Opción B: En tu computadora con Spyder
 1. Descarga o clona este repositorio:
    ```bash
    git clone https://github.com/tonyst4rk239/GAUSS.git
    ```
 2. Abre **Spyder**.
-3. En la barra superior: `Archivo` ➔ `Abrir...` y selecciona **`gauss_jordan_student.py`**.
+3. En la barra superior: `Archivo` ➔ `Abrir...` y selecciona **`gauss_jordan_student.py`** (o importa el notebook **`gauss_jordan_student.ipynb`**).
 4. Iremos completando juntos los bloques marcados con `TODO 1` a `TODO 7`.
 5. Presiona **F5** para ejecutar y verificar los resultados en la consola de IPython.
-
-### Opción B: En la nube con Google Colab (Sin instalar nada)
-Haz clic en el siguiente botón para abrir el código directamente en tu navegador (celular, tablet o laptop):
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tonyst4rk239/GAUSS/blob/main/gauss_jordan_student.py)
 
 ---
 
